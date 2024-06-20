@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parth Bhardwaj</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://jpcdn.it/img/8064740b0d0e39b3371fb544ec314c71.jpg" as="image">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            background-image: url('https://jpcdn.it/img/8064740b0d0e39b3371fb544ec314c71.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding-top: 50px; /* Adjust this value to move the content further down or up */
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif; /* Use the Cormorant Garamond font */
+            font-weight: 400; /* You can adjust the font weight as needed */
+            font-style: normal; /* You can use 'italic' for italics */
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .input-container {
+            margin-top: 50px; /* Adjusted the margin to move the input box down more */
+        }
+        label {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 15px; /* Increased the gap between the label and the input box */
+            text-transform: uppercase;
+        }
+        .input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .input-wrapper::before {
+            content: '₹';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1em;
+            color: black;
+        }
+        input[type="number"] {
+            padding: 10px 10px 10px 25px; /* Adjusted padding to make space for the ₹ sign */
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px; /* Added margin-top for spacing on smaller screens */
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        @media (max-width: 600px) {
+            .input-wrapper, input[type="submit"] {
+                display: block;
+                margin: 0 auto;
+                margin-bottom: 10px; /* Added margin-bottom to separate the input and button */
+            }
+            input[type="submit"] {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>PARTH BHARDWAJ</h1>
+    <div class="input-container">
+        <label for="amount">INSERT AMOUNT IN INR:</label>
+        <div class="input-wrapper">
+            <input type="number" id="amount" name="amount" placeholder="Enter amount">
+        </div>
+        <input type="submit" value="Submit">
+    </div>
+</body>
+</html>
