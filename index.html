@@ -10,7 +10,7 @@
       text-align: center;
       background-color: #f4f4f4;
       margin: 0;
-      padding: 0;
+      padding: 0;   
       transition: background-color 0.3s, color 0.3s;
     }
     body.dark-mode {
@@ -20,6 +20,10 @@
     h1 {
       margin-top: 20px;
       color: #333;
+      cursor: pointer;
+      outline: none;
+      border: none;
+      text-decoration: none;
     }
     .dark-mode h1 {
       color: #fff;
@@ -59,6 +63,57 @@
     .dark-mode #current-time {
       color: #ccc;
     }
+
+    /* Pomodoro Timer Styling */
+    #pomodoro-timer {
+      margin-top: 50px;
+    }
+
+    #pomodoro-timer h2 {
+      color: #333;
+      font-weight: normal; /* Make the Pomodoro Timer text not bold */
+    }
+
+    #pomodoro-countdown p {
+      font-size: 3rem;
+      margin: 20px 0;
+      color: #333; /* Ensure the timer is visible */
+    }
+
+    button {
+      font-size: 1.2rem;
+      margin: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ddd;
+    }
+
+    #pomodoro-status {
+      font-size: 1.2rem;
+      color: #555;
+    }
+
+    /* Dark Mode Styling for Pomodoro Timer */
+    .dark-mode #pomodoro-timer h2 {
+      color: #fff; /* Make heading white in dark mode */
+    }
+
+    .dark-mode #pomodoro-countdown p {
+      color: #fff; /* Make the Pomodoro timer text white */
+    }
+
+    .dark-mode #pomodoro-status {
+      color: #bbb; /* Make Pomodoro status text lighter in dark mode */
+    }
+
+    /* Hide elements */
+    .hidden {
+      display: none;
+    }
+
     /* Mobile responsiveness */
     @media (max-width: 600px) {
       h1 {
@@ -73,11 +128,22 @@
       #motivation {
         font-size: 1rem;
       }
+      #pomodoro-timer h2 {
+        font-size: 1.5rem;
+      }
+      #pomodoro-countdown p {
+        font-size: 2rem;
+      }
+      button {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Countdown to NEET/INICET</h1>
+   
+  <h1 id="toggle-theme">Countdown to NEET/INICET</h1>
+
   <div id="spacer"></div>
   <div id="countdown">
     <p>Loading...</p>
@@ -89,11 +155,20 @@
   <div id="motivation"></div>
   <div id="current-time">Loading current time...</div>
 
+  <!-- Pomodoro Timer -->
+  <div id="pomodoro-timer">
+    <h2>Pomodoro Timer</h2>
+    <div id="pomodoro-countdown">
+      <p>25:00</p>
+    </div>
+    <button id="start-pomodoro">Start</button>
+    <button id="reset-pomodoro">Reset</button>
+    <p id="pomodoro-status">Focus Time</p>
+  </div>
+
   <script>
     // Set the target date for 1st July 2028
     const targetDate = new Date('2028-07-01T00:00:00').getTime();
-
-    // Motivational quotes (in italic)
     const quotes = [
       "The journey of a thousand miles begins with a single step.",
       "Success is no accident. It's hard work, perseverance, and learning.",
@@ -112,8 +187,6 @@
     // Function to update the countdown timer
     function updateCountdown(now) {
       const distance = targetDate - now.getTime();
-
-      // Calculate time left
       const years = Math.floor(distance / (1000 * 60 * 60 * 24 * 365));
       const months = Math.floor((distance % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
       const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
@@ -121,25 +194,23 @@
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-      // Display the result
       document.getElementById('countdown').innerHTML = `
         ${years} Years, ${months} Months, ${days} Days, ${hours} Hours, ${minutes} Minutes, 
         ${seconds} Seconds
       `;
 
-      // Stop timer if the target date is reached
       if (distance < 0) {
         document.getElementById('countdown').innerHTML = "Time's up! Good luck!";
       }
     }
 
-    // Function to display a random motivational quote
+    // Function to update motivational quotes
     function updateMotivation() {
       const randomIndex = Math.floor(Math.random() * quotes.length);
       document.getElementById('motivation').innerText = quotes[randomIndex];
     }
 
-    // Function to update the current time locally
+    // Function to update the current time
     let currentTime = new Date();
     function updateCurrentTime() {
       currentTime.setSeconds(currentTime.getSeconds() + 1);
@@ -159,7 +230,7 @@
       setTimeout(updateCurrentTime, 1000);
     }
 
-    // Function to apply dark mode if the user prefers it
+    // Apply dark mode based on system preference
     function applyDarkModePreference() {
       if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.body.classList.add('dark-mode');
@@ -171,10 +242,103 @@
     // Listen for changes in system theme preference
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyDarkModePreference);
 
+    // Toggle dark mode when the text is clicked
+    document.getElementById('toggle-theme').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+
+    // Function to hide/show elements during Pomodoro
+    function togglePomodoroVisibility(isActive) {
+      const elementsToHide = [
+        document.getElementById('toggle-theme'),
+        document.getElementById('countdown'),
+        document.getElementById('event-date'),
+        document.getElementById('motivation'),
+        document.getElementById('current-time'),
+        document.getElementById('blank-space')
+      ];
+
+      elementsToHide.forEach(element => {
+        if (isActive) {
+          element.classList.add('hidden');
+        } else {
+          element.classList.remove('hidden');
+        }
+      });
+    }
+
+    // Pomodoro timer logic
+    let pomodoroInterval;
+    let pomodoroTimeLeft = 25 * 60; // 25 minutes in seconds
+    let isPomodoroActive = false;
+    let isBreakTime = false;
+
+    const pomodoroDisplay = document.getElementById('pomodoro-countdown').querySelector('p');
+    const startPomodoroButton = document.getElementById('start-pomodoro');
+    const resetPomodoroButton = document.getElementById('reset-pomodoro');
+    const pomodoroStatus = document.getElementById('pomodoro-status');
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function startPomodoro() {
+      if (isPomodoroActive) return;
+      isPomodoroActive = true;
+      startPomodoroButton.textContent = 'Pause';
+      togglePomodoroVisibility(true);  // Hide other elements
+
+      pomodoroInterval = setInterval(() => {
+        if (pomodoroTimeLeft > 0) {
+          pomodoroTimeLeft--;
+          pomodoroDisplay.textContent = formatTime(pomodoroTimeLeft);
+        } else {
+          clearInterval(pomodoroInterval);
+          isPomodoroActive = false;
+          pomodoroStatus.textContent = isBreakTime ? 'Focus Time' : 'Break Time';
+          pomodoroTimeLeft = isBreakTime ? 25 * 60 : 5 * 60;
+          isBreakTime = !isBreakTime;
+          startPomodoroButton.textContent = 'Start';
+          alert(isBreakTime ? 'Break Time!' : 'Focus Time!');
+          togglePomodoroVisibility(false); // Show elements again
+        }
+      }, 1000);
+    }
+
+    function pausePomodoro() {
+      clearInterval(pomodoroInterval);
+      isPomodoroActive = false;
+      startPomodoroButton.textContent = 'Resume';
+      togglePomodoroVisibility(false); // Show elements again
+    }
+
+    function resetPomodoro() {
+      clearInterval(pomodoroInterval);
+      pomodoroTimeLeft = 25 * 60;
+      pomodoroDisplay.textContent = formatTime(pomodoroTimeLeft);
+      isPomodoroActive = false;
+      startPomodoroButton.textContent = 'Start';
+      pomodoroStatus.textContent = 'Focus Time';
+      togglePomodoroVisibility(false); // Show elements again
+    }
+
+    startPomodoroButton.addEventListener('click', () => {
+      if (isPomodoroActive) {
+        pausePomodoro();
+      } else {
+        startPomodoro();
+      }
+    });
+
+    resetPomodoroButton.addEventListener('click', resetPomodoro);
+
     // Initialize the page
     applyDarkModePreference();
     updateMotivation();
     updateCurrentTime();
   </script>
+
 </body>
 </html>
