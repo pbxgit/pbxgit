@@ -21,16 +21,26 @@
     }
     #countdown {
       font-size: 2rem;
-      margin: 50px 0 20px 0;
+      margin: 30px 0;
     }
-    #motivation, #current-time {
-      margin-top: 20px;
-      font-size: 1.2rem;
+    #event-date {
+      font-size: 1.5rem;
       color: #555;
+      margin-top: 10px;
+    }
+    #blank-space {
+      height: 40px; /* Adds blank space between the date and the quotes */
+    }
+    #motivation {
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #555;
+      margin-bottom: 30px;
     }
     #current-time {
       font-size: 1rem;
       color: #777;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -40,27 +50,31 @@
   <div id="countdown">
     <p>Loading...</p>
   </div>
+  <div id="event-date">
+    Expected Exam Date: 1st July 2028
+  </div>
+  <div id="blank-space"></div>
   <div id="motivation"></div>
-  <div id="current-time"></div>
+  <div id="current-time">Loading current time...</div>
 
   <script>
     // Set the target date for 1st July 2028
     const targetDate = new Date('2028-07-01T00:00:00').getTime();
 
-    // Motivational quotes (change every month)
+    // Motivational quotes (in italic)
     const quotes = [
-      "January: The journey of a thousand miles begins with a single step.",
-      "February: Success is no accident. It's hard work, perseverance, and learning.",
-      "March: Your limitation—it’s only your imagination.",
-      "April: Push yourself because no one else is going to do it for you.",
-      "May: Great things never come from comfort zones.",
-      "June: Dreams don’t work unless you do.",
-      "July: Don’t stop when you’re tired. Stop when you’re done.",
-      "August: Wake up with determination. Go to bed with satisfaction.",
-      "September: Little things make big days.",
-      "October: It’s going to be hard, but hard does not mean impossible.",
-      "November: Don’t wait for opportunity. Create it.",
-      "December: Believe in yourself and all that you are."
+      "The journey of a thousand miles begins with a single step.",
+      "Success is no accident. It's hard work, perseverance, and learning.",
+      "Your limitation—it’s only your imagination.",
+      "Push yourself because no one else is going to do it for you.",
+      "Great things never come from comfort zones.",
+      "Dreams don’t work unless you do.",
+      "Don’t stop when you’re tired. Stop when you’re done.",
+      "Wake up with determination. Go to bed with satisfaction.",
+      "Little things make big days.",
+      "It’s going to be hard, but hard does not mean impossible.",
+      "Don’t wait for opportunity. Create it.",
+      "Believe in yourself and all that you are."
     ];
 
     // Function to update the countdown timer
