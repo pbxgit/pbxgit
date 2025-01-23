@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Countdown to NEET/INICET</title>
-  <link rel="icon" href="https://raw.githubusercontent.com/pbxgit/pbxgit/refs/heads/main/SAVE_20250123_102751.jpg" type="image/jpeg">
+  <link rel="manifest" href="manifest.json">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -72,13 +72,13 @@
 
     #pomodoro-timer h2 {
       color: #333;
-      font-weight: normal; /* Make the Pomodoro Timer text not bold */
+      font-weight: normal;
     }
 
     #pomodoro-countdown p {
       font-size: 3rem;
       margin: 20px 0;
-      color: #333; /* Ensure the timer is visible */
+      color: #333;
     }
 
     button {
@@ -99,15 +99,15 @@
 
     /* Dark Mode Styling for Pomodoro Timer */
     .dark-mode #pomodoro-timer h2 {
-      color: #fff; /* Make heading white in dark mode */
+      color: #fff;
     }
 
     .dark-mode #pomodoro-countdown p {
-      color: #fff; /* Make the Pomodoro timer text white */
+      color: #fff;
     }
 
     .dark-mode #pomodoro-status {
-      color: #bbb; /* Make Pomodoro status text lighter in dark mode */
+      color: #bbb;
     }
 
     /* Hide elements */
@@ -341,5 +341,13 @@
     updateCurrentTime();
   </script>
 
-</body>
-</html>
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then((registration) => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch((error) => {
+            console
