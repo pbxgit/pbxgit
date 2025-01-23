@@ -268,6 +268,31 @@
       });
     }
 
+    // Wake Lock API
+    let wakeLock = null;
+
+    // Function to request wake lock
+    async function requestWakeLock() {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => {
+          console.log('Wake lock released');
+        });
+        console.log('Wake lock acquired');
+      } catch (err) {
+        console.error('Wake Lock API error:', err);
+      }
+    }
+
+    // Function to release wake lock
+    function releaseWakeLock() {
+      if (wakeLock) {
+        wakeLock.release();
+        wakeLock = null;
+        console.log('Wake lock released');
+      }
+    }
+
     // Pomodoro timer logic
     let pomodoroInterval;
     let pomodoroTimeLeft = 25 * 60; // 25 minutes in seconds
@@ -291,6 +316,8 @@
       startPomodoroButton.textContent = 'Pause';
       togglePomodoroVisibility(true);  // Hide other elements
 
+      requestWakeLock(); // Request wake lock
+
       pomodoroInterval = setInterval(() => {
         if (pomodoroTimeLeft > 0) {
           pomodoroTimeLeft--;
@@ -304,6 +331,7 @@
           startPomodoroButton.textContent = 'Start';
           alert(isBreakTime ? 'Break Time!' : 'Focus Time!');
           togglePomodoroVisibility(false); // Show elements again
+          releaseWakeLock(); // Release wake lock when timer ends
         }
       }, 1000);
     }
@@ -312,19 +340,22 @@
       clearInterval(pomodoroInterval);
       isPomodoroActive = false;
       startPomodoroButton.textContent = 'Resume';
+      togglePomodoroVisibility(false); // Show elements
       togglePomodoroVisibility(false); // Show elements again
+      releaseWakeLock(); // Release wake lock when timer is paused
     }
 
     function resetPomodoro() {
       clearInterval(pomodoroInterval);
-      pomodoroTimeLeft = 25 * 60;
-      pomodoroDisplay.textContent = formatTime(pomodoroTimeLeft);
       isPomodoroActive = false;
+      pomodoroTimeLeft = 25 * 60; // Reset to 25 minutes
+      pomodoroDisplay.textContent = formatTime(pomodoroTimeLeft);
       startPomodoroButton.textContent = 'Start';
-      pomodoroStatus.textContent = 'Focus Time';
       togglePomodoroVisibility(false); // Show elements again
+      releaseWakeLock(); // Release wake lock when timer is reset
     }
 
+    // Event listeners for the Pomodoro buttons
     startPomodoroButton.addEventListener('click', () => {
       if (isPomodoroActive) {
         pausePomodoro();
@@ -335,11 +366,11 @@
 
     resetPomodoroButton.addEventListener('click', resetPomodoro);
 
-    // Initialize the page
-    applyDarkModePreference();
+    // Start the countdown and update current time
+    updateCountdown(new Date());
     updateMotivation();
     updateCurrentTime();
+    applyDarkModePreference();
   </script>
-
 </body>
 </html>
