@@ -158,7 +158,7 @@
 
   <!-- Pomodoro Timer -->
   <div id="pomodoro-timer">
-    <h2>Pomodoro Timer</h2>
+    <h2 id="pomodoro-toggle">Pomodoro Timer</h2>
     <div id="pomodoro-countdown">
       <p>25:00</p>
     </div>
@@ -268,41 +268,21 @@
       });
     }
 
-    // Wake Lock API
-    let wakeLock = null;
-
-    // Function to request wake lock
-    async function requestWakeLock() {
-      try {
-        wakeLock = await navigator.wakeLock.request('screen');
-        wakeLock.addEventListener('release', () => {
-          console.log('Wake lock released');
-        });
-        console.log('Wake lock acquired');
-      } catch (err) {
-        console.error('Wake Lock API error:', err);
-      }
-    }
-
-    // Function to release wake lock
-    function releaseWakeLock() {
-      if (wakeLock) {
-        wakeLock.release();
-        wakeLock = null;
-        console.log('Wake lock released');
-      }
-    }
-
     // Pomodoro timer logic
     let pomodoroInterval;
     let pomodoroTimeLeft = 25 * 60; // 25 minutes in seconds
     let isPomodoroActive = false;
     let isBreakTime = false;
+    let beepMode = true; // Default beep mode is on
 
     const pomodoroDisplay = document.getElementById('pomodoro-countdown').querySelector('p');
     const startPomodoroButton = document.getElementById('start-pomodoro');
     const resetPomodoroButton = document.getElementById('reset-pomodoro');
     const pomodoroStatus = document.getElementById('pomodoro-status');
+    const pomodoroToggle = document.getElementById('pomodoro-toggle');
+
+    // Sound for beep
+    const beepSound = new Audio('https://www.soundjay.com/buttons/sounds/beep-08b.mp3');
 
     function formatTime(seconds) {
       const minutes = Math.floor(seconds / 60);
@@ -316,8 +296,6 @@
       startPomodoroButton.textContent = 'Pause';
       togglePomodoroVisibility(true);  // Hide other elements
 
-      requestWakeLock(); // Request wake lock
-
       pomodoroInterval = setInterval(() => {
         if (pomodoroTimeLeft > 0) {
           pomodoroTimeLeft--;
@@ -326,12 +304,12 @@
           clearInterval(pomodoroInterval);
           isPomodoroActive = false;
           pomodoroStatus.textContent = isBreakTime ? 'Focus Time' : 'Break Time';
-          pomodoroTimeLeft = isBreakTime ? 25 * 60 : 5 * 60;
+          if (beepMode) beepSound.play(); // Play beep sound
+          pomodoroTimeLeft = isBreakTime ? 25 * 60 : 5 * 60; // Reset timer
           isBreakTime = !isBreakTime;
           startPomodoroButton.textContent = 'Start';
           alert(isBreakTime ? 'Break Time!' : 'Focus Time!');
           togglePomodoroVisibility(false); // Show elements again
-          releaseWakeLock(); // Release wake lock when timer ends
         }
       }, 1000);
     }
@@ -340,19 +318,23 @@
       clearInterval(pomodoroInterval);
       isPomodoroActive = false;
       startPomodoroButton.textContent = 'Resume';
-      togglePomodoroVisibility(false); // Show elements
       togglePomodoroVisibility(false); // Show elements again
-      releaseWakeLock(); // Release wake lock when timer is paused
     }
 
     function resetPomodoro() {
       clearInterval(pomodoroInterval);
-      isPomodoroActive = false;
-      pomodoroTimeLeft = 25 * 60; // Reset to 25 minutes
+      pomodoroTimeLeft = 25 * 60;
       pomodoroDisplay.textContent = formatTime(pomodoroTimeLeft);
+      isPomodoroActive = false;
       startPomodoroButton.textContent = 'Start';
+      pomodoroStatus.textContent = 'Focus Time';
       togglePomodoroVisibility(false); // Show elements again
-      releaseWakeLock(); // Release wake lock when timer is reset
+    }
+
+    function toggleBeepMode() {
+      beepMode = !beepMode;
+      const message = beepMode ? 'Silent mode OFF' : 'Silent mode ON';
+      alert(message); // Display temporary message for silent mode
     }
 
     // Event listeners for the Pomodoro buttons
@@ -366,11 +348,14 @@
 
     resetPomodoroButton.addEventListener('click', resetPomodoro);
 
-    // Start the countdown and update current time
-    updateCountdown(new Date());
+    // Toggle beep/silent mode when clicking the Pomodoro Timer heading
+    pomodoroToggle.addEventListener('click', toggleBeepMode);
+
+    // Initialize the page
+    applyDarkModePreference();
     updateMotivation();
     updateCurrentTime();
-    applyDarkModePreference();
   </script>
+
 </body>
 </html>
