@@ -168,6 +168,32 @@
   </div>
 
   <script>
+      
+      // Function to enter fullscreen mode
+function enterFullscreen() {
+  const element = document.documentElement; // Use the entire webpage
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.webkitRequestFullscreen) { // Safari compatibility
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) { // Older IE/Edge compatibility
+    element.msRequestFullscreen();
+  }
+}
+
+// Function to exit fullscreen mode
+function exitFullscreen() {
+  if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { // Safari compatibility
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { // Older IE/Edge compatibility
+      document.msExitFullscreen();
+    }
+  }
+}
+
   let wakeLock = null;
 
 // Function to request wake lock
@@ -321,6 +347,9 @@ function releaseWakeLock() {
     requestWakeLock();
   }
 
+  // Enter fullscreen mode
+  enterFullscreen();
+
   pomodoroInterval = setInterval(() => {
     if (pomodoroTimeLeft > 0) {
       pomodoroTimeLeft--;
@@ -340,7 +369,7 @@ function releaseWakeLock() {
       togglePomodoroVisibility(false); // Show elements again
     }
   }, 1000);
-} 
+}
 
     function pausePomodoro() {
   clearInterval(pomodoroInterval);
@@ -363,6 +392,9 @@ function releaseWakeLock() {
 
   // Release wake lock when reset
   releaseWakeLock();
+
+  // Exit fullscreen mode
+  exitFullscreen();
 }
 
     function toggleBeepMode() {
