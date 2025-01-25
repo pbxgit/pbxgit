@@ -168,6 +168,26 @@
   </div>
 
   <script>
+  let wakeLock = null;
+
+// Function to request wake lock
+async function requestWakeLock() {
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    console.log('Wake Lock is active');
+  } catch (err) {
+    console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
+  }
+}
+
+// Function to release wake lock
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release();
+    wakeLock = null;
+    console.log('Wake Lock has been released');
+  }
+}
     // Set the target date for 1st July 2028
     const targetDate = new Date('2028-07-01T00:00:00').getTime();
     const quotes = [
@@ -291,45 +311,59 @@
     }
 
     function startPomodoro() {
-      if (isPomodoroActive) return;
-      isPomodoroActive = true;
-      startPomodoroButton.textContent = 'Pause';
-      togglePomodoroVisibility(true);  // Hide other elements
+  if (isPomodoroActive) return;
+  isPomodoroActive = true;
+  startPomodoroButton.textContent = 'Pause';
+  togglePomodoroVisibility(true); // Hide other elements
 
-      pomodoroInterval = setInterval(() => {
-        if (pomodoroTimeLeft > 0) {
-          pomodoroTimeLeft--;
-          pomodoroDisplay.textContent = formatTime(pomodoroTimeLeft);
-        } else {
-          clearInterval(pomodoroInterval);
-          isPomodoroActive = false;
-          pomodoroStatus.textContent = isBreakTime ? 'Focus Time' : 'Break Time';
-          if (beepMode) beepSound.play(); // Play beep sound
-          pomodoroTimeLeft = isBreakTime ? 25 * 60 : 5 * 60; // Reset timer
-          isBreakTime = !isBreakTime;
-          startPomodoroButton.textContent = 'Start';
-          alert(isBreakTime ? 'Break Time!' : 'Focus Time!');
-          togglePomodoroVisibility(false); // Show elements again
-        }
-      }, 1000);
+  // Request wake lock when Pomodoro starts
+  if ('wakeLock' in navigator) {
+    requestWakeLock();
+  }
+
+  pomodoroInterval = setInterval(() => {
+    if (pomodoroTimeLeft > 0) {
+      pomodoroTimeLeft--;
+      pomodoroDisplay.textContent = formatTime(pomodoroTimeLeft);
+    } else {
+      clearInterval(pomodoroInterval);
+      isPomodoroActive = false;
+      pomodoroStatus.textContent = isBreakTime ? 'Focus Time' : 'Break Time';
+
+      // Release wake lock when timer ends
+      releaseWakeLock();
+
+      pomodoroTimeLeft = isBreakTime ? 25 * 60 : 5 * 60; // Reset timer
+      isBreakTime = !isBreakTime;
+      startPomodoroButton.textContent = 'Start';
+      alert(isBreakTime ? 'Break Time!' : 'Focus Time!');
+      togglePomodoroVisibility(false); // Show elements again
     }
+  }, 1000);
+} 
 
     function pausePomodoro() {
-      clearInterval(pomodoroInterval);
-      isPomodoroActive = false;
-      startPomodoroButton.textContent = 'Resume';
-      togglePomodoroVisibility(false); // Show elements again
-    }
+  clearInterval(pomodoroInterval);
+  isPomodoroActive = false;
+  startPomodoroButton.textContent = 'Resume';
+  togglePomodoroVisibility(false); // Show elements again
+
+  // Release wake lock when paused
+  releaseWakeLock();
+}
 
     function resetPomodoro() {
-      clearInterval(pomodoroInterval);
-      pomodoroTimeLeft = 25 * 60;
-      pomodoroDisplay.textContent = formatTime(pomodoroTimeLeft);
-      isPomodoroActive = false;
-      startPomodoroButton.textContent = 'Start';
-      pomodoroStatus.textContent = 'Focus Time';
-      togglePomodoroVisibility(false); // Show elements again
-    }
+  clearInterval(pomodoroInterval);
+  pomodoroTimeLeft = 25 * 60;
+  pomodoroDisplay.textContent = formatTime(pomodoroTimeLeft);
+  isPomodoroActive = false;
+  startPomodoroButton.textContent = 'Start';
+  pomodoroStatus.textContent = 'Focus Time';
+  togglePomodoroVisibility(false); // Show elements again
+
+  // Release wake lock when reset
+  releaseWakeLock();
+}
 
     function toggleBeepMode() {
       beepMode = !beepMode;
